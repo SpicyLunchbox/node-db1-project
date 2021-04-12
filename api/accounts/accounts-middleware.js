@@ -2,14 +2,13 @@ const Accounts = require('./accounts-model.js');
 
 const checkAccountPayload = (req, res, next) => {
   const {name, budget} = req.body
-  const trimmedName = name.trim()
   if(!name || !budget){
     res.status(400).json({message:"name and budget are required"})
   }else
   if(typeof name != 'string'){
     res.status(400).json({message:"name of account must be a string"})
   }else
-  if(trimmedName.length < 3 || trimmedName.length > 100){
+  if(name.trim().length < 3 || name.trim().length > 100){
     res.status(400).json({message:"name of account must be between 3 and 100"})
   }else
   if(typeof budget != 'number'){
@@ -25,7 +24,7 @@ const checkAccountNameUnique = (req, res, next) => {
   const trimmedName = name.trim()
   Accounts.getByName(trimmedName)
           .then(account => {
-            if(account === null || Object.keys(account).length === 0){
+            if(!account){
               next()
             }else{
               res.status(400).json({message:"that name is taken"})
@@ -37,7 +36,7 @@ const checkAccountId = (req, res, next) => {
  const id = req.params.id
  Accounts.getById(id)
         .then(account => {
-          if(account === null || account.length === 0){
+          if(!account){
             res.status(404).json({message:"account not found"})
           }else{next()}
         })
