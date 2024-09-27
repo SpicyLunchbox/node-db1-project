@@ -1,27 +1,44 @@
+const db = require("../../data/db-config.js")
+
 const getAll = () => {
-  // DO YOUR MAGIC
+  return db('accounts')
 }
 
 const getById = id => {
-  // DO YOUR MAGIC
+  return db('accounts').where('id',id).first()
 }
 
-const create = account => {
-  // DO YOUR MAGIC
+const getByName = (name) => {
+  return db('accounts').where('name',name).first()
 }
 
-const updateById = (id, account) => {
-  // DO YOUR MAGIC
+async function create({name, budget}) {
+  const [id] = await db('accounts').insert({name, budget})
+  return getById(id)
 }
 
-const deleteById = id => {
-  // DO YOUR MAGIC
+async function updateById(id,{name, budget}) {
+  await db('accounts').where('id',id).update({name,budget})
+  return getById(id)
+}
+
+async function deleteById(id) {
+  const deletedAccount = await getById(id)
+  await db('accounts').where('id',id).delete()
+  return deletedAccount
 }
 
 module.exports = {
   getAll,
   getById,
+  getByName,
   create,
   updateById,
   deleteById,
 }
+
+// getAll resolves to an array of accounts (or an empty array)
+// getById resolves to an account by the given id
+// create resolves to the newly created account
+// updateById resolves to the updated account
+// deleteById resolves to the deleted account
